@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.view.KeyEvent
+import android.view.View
 import android.widget.EditText
 import android.widget.SearchView
 import android.widget.Toast
@@ -14,7 +15,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.notesapplication.MainActivity
 import com.example.notesapplication.R
 import com.example.notesapplication.database.model.Notes
 import com.example.notesapplication.databinding.ActivityInsideFolderBinding
@@ -44,9 +44,19 @@ class InsideFolderActivity : AppCompatActivity(),MainPage {
 
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
+
         noteViewModel.allNotes.observe(this) {
             adapter.setNote(it)
             adapter.fileInFolder(folderId)
+            if(!adapter.insideFolderIsNoteAvailable) {
+                binding.imageView2.setImageResource(R.drawable.empty_note)
+                binding.imageView2.visibility = View.VISIBLE
+                binding.emptyNoteFlag.visibility = View.VISIBLE
+            }
+            else {
+                binding.imageView2.visibility = View.GONE
+                binding.emptyNoteFlag.visibility = View.GONE
+            }
 
         }
 
@@ -65,10 +75,15 @@ class InsideFolderActivity : AppCompatActivity(),MainPage {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val currentNote = adapter.getNote(viewHolder.adapterPosition)
-                if(currentNote.lock==null)
-                    deleteDialogBox(currentNote)
-                else
-                    PasswordDialogBox(currentNote)
+                Log.i("delnote",currentNote.toString())
+                //currentNote.folder_id = folderId
+
+//                if(currentNote.folder_id == folderId) {
+                    if (currentNote.lock == null)
+                        deleteDialogBox(currentNote)
+                    else
+                        PasswordDialogBox(currentNote)
+//                }
 
             }
         }).attachToRecyclerView(binding.recyclerView)
@@ -108,6 +123,7 @@ class InsideFolderActivity : AppCompatActivity(),MainPage {
 
             adapter.notifyItemInserted(adapter.itemCount)
             adapter.notifyDataSetChanged()
+            Toast.makeText(this@InsideFolderActivity,"Inserted...",Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, "Note not saved", Toast.LENGTH_SHORT).show()
         }
@@ -118,17 +134,19 @@ class InsideFolderActivity : AppCompatActivity(),MainPage {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Delete :")
         builder.setMessage("Do you want to delete? ")
-
+        builder.setCancelable(false)
         builder.setPositiveButton(
             "OK"
         ) { dialog, which ->
+            //note.folder_id = folderId
             noteViewModel.delete(note)
             adapter.notifyItemRemoved(note.note_id)
+            Toast.makeText(this@InsideFolderActivity,"Deleted...",Toast.LENGTH_SHORT).show()
         }
         builder.setNegativeButton(
             "Cancel"
         ) { dialog, which ->
-
+            Toast.makeText(this@InsideFolderActivity,"Canceled...",Toast.LENGTH_SHORT).show()
             adapter.notifyDataSetChanged()
             dialog.cancel()
 
@@ -142,7 +160,7 @@ class InsideFolderActivity : AppCompatActivity(),MainPage {
         var pass = ""
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Password : ")
-
+        builder.setCancelable(false)
         val input = EditText(this)
         input.inputType =
             InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -165,8 +183,10 @@ class InsideFolderActivity : AppCompatActivity(),MainPage {
             "Cancel"
         ) { dialog, _ ->
             dialog.cancel()
-            adapter.notifyDataSetChanged() }
+            adapter.notifyDataSetChanged()
+            Toast.makeText(this@InsideFolderActivity,"Canceled...",Toast.LENGTH_SHORT).show()}
 
         builder.show()
     }
+
 }

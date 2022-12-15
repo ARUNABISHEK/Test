@@ -11,7 +11,7 @@ data class Notes(
     @PrimaryKey(autoGenerate = true)
 
     @ColumnInfo(name = "note_id")
-    val note_id : Int,
+    var note_id : Int,
 
     @ColumnInfo(name = "title")
     var title : String?,
@@ -29,7 +29,10 @@ data class Notes(
     var lock : String? = null,
 
     @ColumnInfo(name = "folder_id")
-    var folder_id : Int = -1
+    var folder_id : Int = -1,
+
+    @ColumnInfo(name = "color_code")
+    var color : String
 
 
 ) : java.io.Serializable

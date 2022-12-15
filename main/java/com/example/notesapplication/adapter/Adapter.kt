@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notesapplication.R
 import com.example.notesapplication.database.model.Notes
@@ -28,12 +27,14 @@ class Adapter(private val isStared : Boolean = false) : RecyclerView.Adapter<Vie
     private var noteList = mutableListOf<Notes>()
     private var myList = mutableListOf<Notes>()
     private var folderId : Int = -1
-
+    var insideFolderIsNoteAvailable = false
     private lateinit var binding : NotesListBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
         val layoutInflater = LayoutInflater.from(parent.context)
         binding = DataBindingUtil.inflate(layoutInflater, R.layout.notes_list,parent,false)
+
         return ViewHolder(binding)
     }
 
@@ -42,6 +43,7 @@ class Adapter(private val isStared : Boolean = false) : RecyclerView.Adapter<Vie
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
         if(folderId!=-1) {
             if(myList[position].folder_id == folderId) {
                 holder.bind(myList[position])
@@ -54,6 +56,7 @@ class Adapter(private val isStared : Boolean = false) : RecyclerView.Adapter<Vie
             holder.bind(myList[position])
         }
 
+        holder.binding.cardView.setCardBackgroundColor(Color.parseColor(myList[position].color))
 
     }
 
@@ -82,9 +85,8 @@ class Adapter(private val isStared : Boolean = false) : RecyclerView.Adapter<Vie
         notifyDataSetChanged()
     }
 
-
     fun getNote(index : Int) : Notes {
-        return noteList[index]
+        return myList[index]
     }
 
     fun setNote(list : List<Notes>) {
@@ -97,6 +99,7 @@ class Adapter(private val isStared : Boolean = false) : RecyclerView.Adapter<Vie
     }
 
     fun fileInFolder(id : Int) {
+
         myList.clear()
 
         for(i in noteList) {
@@ -104,19 +107,34 @@ class Adapter(private val isStared : Boolean = false) : RecyclerView.Adapter<Vie
                 myList.add(i)
             }
         }
+
         notifyDataSetChanged()
+
+        insideFolderIsNoteAvailable = myList.isNotEmpty()
     }
 
 }
 
 class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(binding.root) {
+
+    private fun setTextColor(colorCodeTitle : Int,colorCode : Int) {
+        binding.title.setTextColor(colorCodeTitle)
+        binding.note.setTextColor(colorCode)
+        binding.date.setTextColor(colorCode)
+
+        binding.title.setHintTextColor(colorCode)
+        binding.note.setHintTextColor(colorCode)
+    }
+
     fun bind(note : Notes) {
+
         binding.title.text = note.title
         binding.note.text = note.note
         binding.date.text = note.date
         binding.indexLock.setImageResource(R.drawable.ic_baseline_lock_open_24)
         binding.indexPin.setImageResource(R.drawable.ic_baseline_star_border_24)
-        //binding.indexBin.setImageResource(R.drawable.ic_baseline_delete_outline_24)
+
+        setTextColor(Color.BLACK,R.color.black)
 
 
         if(note.lock!=null) {
@@ -152,7 +170,35 @@ class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(bindin
             lockDialogBox(it,note,noteViewModel)
         }
 
+        binding.listItem.setOnLongClickListener{
+
+            //popup(it,note)
+            true
+        }
+
     }
+
+//    private fun popup(v: View,note: Notes) {
+//        val popupMenu = PopupMenu(v.context, v)
+//        popupMenu.menu.add("Copy")
+//        popupMenu.menu.add("Move")
+//        popupMenu.menu.add("Rename")
+//        popupMenu.setOnMenuItemClickListener { item ->
+//
+//            if (item.title == "Copy") {
+//                copyNote = note
+//                Toast.makeText(v.context,"Note copied",Toast.LENGTH_SHORT).show()
+//            }
+//            if (item.title == "Move") {
+//
+//            }
+//            if (item.title == "Rename") {
+//
+//            }
+//            true
+//        }
+//        popupMenu.show()
+//    }
 
     fun bindStared(note: Notes) {
         binding.title.text = note.title
@@ -160,6 +206,8 @@ class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(bindin
         binding.date.text = note.date
         binding.indexLock.setImageResource(R.drawable.ic_baseline_lock_open_24)
         binding.indexPin.setImageResource(R.drawable.ic_baseline_star_24)
+
+        setTextColor(Color.BLACK,R.color.black)
 
         if(note.lock!=null) {
             //binding.cardView.setCardBackgroundColor(Color.RED)
@@ -204,6 +252,8 @@ class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(bindin
                 if (pass == "" || pass == null) {
                     Toast.makeText(it.context, "Please enter password", Toast.LENGTH_SHORT)
                         .show()
+                    lockDialogBox(it, note, noteViewModel)
+
                 } else {
                     Log.i("lock", pass.toString())
                     note.lock = noteViewModel.encrypt(pass.toString())
@@ -212,9 +262,14 @@ class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(bindin
                 }
 
             }
+
             builder.setNegativeButton(
                 "Cancel"
-            ) { dialog, which -> dialog.cancel() }
+            ) { dialog, which ->
+                Toast.makeText(it.context, "Canceled", Toast.LENGTH_SHORT)
+                    .show()
+                dialog.cancel()
+            }
 
             builder.show()
         }
@@ -242,7 +297,9 @@ class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(bindin
             }
             builder.setNegativeButton(
                 "Cancel"
-            ) { dialog, _ -> dialog.cancel() }
+            ) { dialog, _ -> dialog.cancel()
+                Toast.makeText(it.context, "Please enter password", Toast.LENGTH_SHORT)
+                    .show()}
 
             builder.show()
         }
@@ -252,6 +309,7 @@ class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(bindin
         var text = ""
         if(note.lock!=null) {
             val builder = AlertDialog.Builder(it)
+            builder.setCancelable(false)
             builder.setTitle("Password : ")
 
             val input = EditText(it)
@@ -261,23 +319,35 @@ class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(bindin
 
             builder.setPositiveButton(
                 "OK"
-            ) { dialog, which -> text = input.text.toString()
+            ) { dialog, which ->
+
+                text = input.text.toString()
 
                 val decrypt : String = noteViewModel.decrypt(note.lock.toString())
-                Log.i("Decry",decrypt)
-                if(text==decrypt) {
-                    val i = Intent(it, AddNote::class.java)
-                    i.putExtra("noteObject",note)
-                    i.putExtra("isUpdate",true)
-                    startActivity(it, i, null)
+
+                if(text=="") {
+                    Toast.makeText(it, "Please enter password", Toast.LENGTH_SHORT)
+                        .show()
+                    openNote(it, note)
+
                 }
                 else {
-                    Toast.makeText(it,"Incorrect password", Toast.LENGTH_SHORT).show()
+                    if (text == decrypt) {
+                        val i = Intent(it, AddNote::class.java)
+                        i.putExtra("noteObject", note)
+                        i.putExtra("isUpdate", true)
+                        startActivity(it, i, null)
+                    } else {
+                        Toast.makeText(it, "Incorrect password", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             builder.setNegativeButton(
                 "Cancel"
-            ) { dialog, which -> dialog.cancel() }
+            ) { dialog, which ->
+                Toast.makeText(it, "Canceled", Toast.LENGTH_SHORT)
+                    .show()
+                dialog.cancel() }
 
             builder.show()
         } else {
@@ -287,4 +357,6 @@ class ViewHolder(val binding: NotesListBinding) : RecyclerView.ViewHolder(bindin
             startActivity(it, i, null)
         }
     }
+
 }
+

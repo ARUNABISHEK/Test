@@ -22,6 +22,9 @@ interface NoteDao {
     @Delete
     suspend fun deleteNote(note: Notes)
 
+    @Query("DELETE FROM $TABLE_NAME WHERE folder_id= :id")
+    suspend fun deleteInsideFolder(id : Int)
+
     @Query("SELECT * FROM $TABLE_NAME ORDER BY date DESC")
     fun showAllNote(): LiveData<List<Notes>>
 

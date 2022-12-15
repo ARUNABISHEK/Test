@@ -2,6 +2,8 @@ package com.example.notesapplication.variables
 
 import android.graphics.Color
 import android.os.Environment
+import android.provider.Settings.Global.getString
+import com.example.notesapplication.R
 
 //Names
 const val TABLE_NAME = "notes_table"
@@ -29,17 +31,17 @@ const val TEST_TAG = "test"
 const val INTENT_TITLE = "title"
 const val INTENT_NOTE = "note"
 
-//Path
-val DIRECTORY_PATH = Environment.getExternalStorageDirectory().path + "/Documents/com.example.notesapplication"
-//Note color
 val COLOR = arrayOf(
-    Color.CYAN,
-    Color.GREEN,
-    Color.LTGRAY,
-    Color.MAGENTA,
-    Color.YELLOW,
-    Color.GRAY,
+    "#FF6263",
+    "#23C4ED",
+    "#38CC77",
+    "#DFDFBD",      //Light - Worst
+    "#318BD1",      //Dark - Worst
+    "#D345D0"       //Dart - Worst
+
 )
+
+
 
 
 

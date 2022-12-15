@@ -9,8 +9,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp"
-    android:background="@color/app_background"
     tools:context=".MainActivity">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -28,7 +26,6 @@
             android:id="@+id/search_view"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@null"
             android:iconifiedByDefault="false"
             android:queryHint="@string/search_bar_text"
             app:layout_constraintEnd_toEndOf="parent"

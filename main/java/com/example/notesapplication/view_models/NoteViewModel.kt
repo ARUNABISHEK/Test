@@ -1,18 +1,15 @@
 package com.example.notesapplication.view_models
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Dao
 import com.example.notesapplication.operations.EventCompletion
 import com.example.notesapplication.SetPassword
-import com.example.notesapplication.database.NoteDatabase
 import com.example.notesapplication.database.model.Notes
 import com.example.notesapplication.database.repository.NoteRepository
+import com.example.notesapplication.variables.COLOR
 import com.example.notesapplication.variables.METHOD
 import com.example.notesapplication.variables.OPERATION_COMPLETED_TAG
 import kotlinx.coroutines.*
@@ -21,16 +18,14 @@ class NoteViewModel(private val repository : NoteRepository) : ViewModel(),SetPa
 
     val allNotes = repository.allNotes
     val favouriteNote = repository.favouriteNote
-
-
+    var colorIndex = (COLOR.indices).random()
+   // var colorIndex = 0
     private val statusMessage = MutableLiveData<EventCompletion<String>>()
     val message : LiveData<EventCompletion<String>>
         get() = statusMessage
 
     private fun insertNote(note : Notes) = viewModelScope.launch {
-//        withContext(NonCancellable) {
-            repository.insert(note)
-//        }
+        repository.insert(note)
         Log.i("save","Goto view model background")
         Log.i(OPERATION_COMPLETED_TAG,"Inserted")
 
@@ -55,6 +50,14 @@ class NoteViewModel(private val repository : NoteRepository) : ViewModel(),SetPa
         }
     }
 
+    private fun deleteInsideFolder(id : Int) = viewModelScope.launch {
+        repository.deleteInsideFolder(id)
+        Log.i(OPERATION_COMPLETED_TAG,"Deleted")
+        withContext(Dispatchers.Main) {
+            statusMessage.value = EventCompletion("Deleted!")
+        }
+    }
+
     fun update(note : Notes) {
         val job : Job = updateNote(note)
 
@@ -72,6 +75,17 @@ class NoteViewModel(private val repository : NoteRepository) : ViewModel(),SetPa
         if(!job.isActive) {
             runBlocking {
                 repository.delete(note)
+            }
+        }
+        Log.i(METHOD,"delete method invoked")
+    }
+
+    fun deleteInFolder(id : Int) {
+        val job : Job = deleteInsideFolder(id)
+
+        if(!job.isActive) {
+            runBlocking {
+                repository.deleteInsideFolder(id)
             }
         }
         Log.i(METHOD,"delete method invoked")

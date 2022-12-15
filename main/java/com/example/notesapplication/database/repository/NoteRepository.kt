@@ -28,6 +28,11 @@ class NoteRepository(private val dao: NoteDao) {
         Log.i(REPOSITORY_CHECK, "Delete repository method invoked")
     }
 
+    suspend fun deleteInsideFolder(id: Int) {
+        dao.deleteInsideFolder(id)
+        Log.i(REPOSITORY_CHECK, "Delete inside folder repository method invoked")
+    }
+
 
 
 }

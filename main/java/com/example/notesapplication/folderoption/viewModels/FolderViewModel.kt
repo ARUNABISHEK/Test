@@ -1,6 +1,8 @@
 package com.example.notesapplication.folderoption.viewModels
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.notesapplication.SetPassword
 import com.example.notesapplication.folderoption.db.model.Folder
 import com.example.notesapplication.folderoption.db.repository.FolderRepository
+import com.example.notesapplication.folderoption.fragment.FolderFragment
 import com.example.notesapplication.operations.EventCompletion
 import com.example.notesapplication.variables.METHOD
 import com.example.notesapplication.variables.OPERATION_COMPLETED_TAG

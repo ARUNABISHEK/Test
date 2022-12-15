@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--Default color-->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,14 +9,16 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="app_background">#F3EFE1</color>
 
     <color name="icon_color">#F60505</color>
     <color name="icon_text_color">#2F4C29</color>
 
-    <color name="color1">#073FDF</color>
-    <color name="color2">#7FED68</color>
-    <color name="color3">#5B1FEF</color>
-    <color name="color4">#F6BF07</color>
-    <color name="color5">#35EFC4</color>
+    <color name="color1">#FF6263</color>
+    <color name="color2">#23c4ed</color>
+    <color name="color3">#38cc77</color>
+    <color name="color4">#318bd1</color>
+    <color name="color5">#d345d0</color>
+
+    <color name="main_status_bar">#79000000</color>
+
 </resources>
