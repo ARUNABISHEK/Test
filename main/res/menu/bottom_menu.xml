@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:title="Home"
+        android:icon="@drawable/ic_baseline_home_24"
+        />
+
+    <item
+        android:id="@+id/stared"
+        android:title="Stared"
+        android:icon="@drawable/ic_baseline_star_24"
+        />
+
+    <item
+        android:id="@+id/folder"
+        android:title="Folder"
+        android:icon="@drawable/ic_baseline_folder_24"/>
+
+</menu>
